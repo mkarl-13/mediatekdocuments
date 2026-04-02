@@ -37,6 +37,12 @@ namespace MediaTekDocuments.dal
         private const string POST = "POST";
         /// <summary>
         /// méthode HTTP pour update
+        /// </summary>
+        private const string PUT = "PUT";
+        /// <summary>
+        /// méthode HTTP pour suppression
+        /// </summary>
+        private const string DELETE = "DELETE";
 
         /// <summary>
         /// Méthode privée pour créer un singleton
@@ -98,6 +104,16 @@ namespace MediaTekDocuments.dal
         {
             IEnumerable<Public> lesPublics = TraitementRecup<Public>(GET, "public", null);
             return new List<Categorie>(lesPublics);
+        }
+
+        /// <summary>
+        /// Retourne toutes les périodicités disponibles à partir de la BDD
+        /// </summary>
+        /// <returns>Liste d'objets Public</returns>
+        public List<Categorie> GetAllPeriodicites()
+        {
+            IEnumerable<Public> lesPeriodicites = TraitementRecup<Public>(GET, "periodicite", null);
+            return new List<Categorie>(lesPeriodicites);
         }
 
         /// <summary>
@@ -244,5 +260,299 @@ namespace MediaTekDocuments.dal
             }
         }
 
+        /// <summary>
+        /// Retourne le prochain id de revue libre pour l'insertion
+        /// </summary>
+        /// <returns>Prochain id disponible pour une revue</returns>
+        public string GetNextIdLivre()
+        {
+            List<Document> liste = TraitementRecup<Document>(GET, "nextidlivre", null);
+            return liste?[0].Id ?? "00001";
+        }
+
+        /// <summary>
+        /// Retourne le prochain id de revue libre pour l'insertion
+        /// </summary>
+        /// <returns>Prochain id disponible pour une revue</returns>
+        public string GetNextIdDvd()
+        {
+            List<Document> liste = TraitementRecup<Document>(GET, "nextiddvd", null);
+            return liste?[0].Id ?? "20001";
+        }
+
+        /// <summary>
+        /// Retourne le prochain id de revue libre pour l'insertion
+        /// </summary>
+        /// <returns>Prochain id disponible pour une revue</returns>
+        public string GetNextIdRevue()
+        {
+            List<Document> liste = TraitementRecup<Document>(GET, "nextidrevue", null);
+            return liste?[0].Id ?? "10001";
+        }
+
+        /// <summary>
+        /// Crée un livre dans les tables document, livres_dvd et livre
+        /// </summary>
+        /// <param name="livre">objet Livre à insérer</param>
+        /// <returns>true si l'insertion a pu se faire</returns>
+        public bool CreerLivre(Livre livre)
+        {
+            String jsonLivre = JsonConvert.SerializeObject(new Dictionary<string, object>
+            {
+                { "id",         livre.Id },
+                { "titre",      livre.Titre },
+                { "image",      livre.Image },
+                { "idGenre",    livre.IdGenre },
+                { "idPublic",   livre.IdPublic },
+                { "idRayon",    livre.IdRayon },
+                { "ISBN",       livre.Isbn },
+                { "auteur",     livre.Auteur },
+                { "collection", livre.Collection }
+            });
+            Console.WriteLine("JSON envoyé : " + jsonLivre);
+            try
+            {
+                JObject retour = api.RecupDistant(POST, "insertlivre", "champs=" + jsonLivre);
+                String code = (String)retour["code"];
+                return code.Equals("200");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Erreur : " + ex.Message);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Crée un dvd dans les tables document, livres_dvd et dvd
+        /// </summary>
+        /// <param name="dvd">objet Dvd à insérer</param>
+        /// <returns>true si l'insertion a pu se faire</returns>
+        public bool CreerDvd(Dvd dvd)
+        {
+            String jsonDvd = JsonConvert.SerializeObject(new Dictionary<string, object>
+            {
+                { "id",          dvd.Id },
+                { "titre",       dvd.Titre },
+                { "image",       dvd.Image },
+                { "idGenre",     dvd.IdGenre },
+                { "idPublic",    dvd.IdPublic },
+                { "idRayon",     dvd.IdRayon },
+                { "synopsis",    dvd.Synopsis },
+                { "realisateur", dvd.Realisateur },
+                { "duree",       dvd.Duree }
+            });
+            try
+            {
+                JObject retour = api.RecupDistant(POST, "insertdvd", "champs=" + jsonDvd);
+                String code = (String)retour["code"];
+                return code.Equals("200");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Erreur : " + ex.Message);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Crée une revue dans les tables document et revue
+        /// </summary>
+        /// <param name="revue">objet Revue à insérer</param>
+        /// <returns>true si l'insertion a pu se faire</returns>
+        public bool CreerRevue(Revue revue)
+        {
+            String jsonRevue = JsonConvert.SerializeObject(new Dictionary<string, object>
+            {
+                { "id",              revue.Id },
+                { "titre",           revue.Titre },
+                { "image",           revue.Image },
+                { "idGenre",         revue.IdGenre },
+                { "idPublic",        revue.IdPublic },
+                { "idRayon",         revue.IdRayon },
+                { "periodicite",     revue.Periodicite },
+                { "delaiMiseADispo", revue.DelaiMiseADispo }
+            });
+            try
+            {
+                JObject retour = api.RecupDistant(POST, "insertrevue", "champs=" + jsonRevue);
+                String code = (String)retour["code"];
+                return code.Equals("200");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Erreur : " + ex.Message);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Modifie un livre dans les tables document et livre
+        /// </summary>
+        /// <param name="livre">objet livre à modifier</param>
+        /// <returns>true si l'insertion a pu se faire</returns>
+        public bool ModifierLivre(Livre livre)
+        {
+            String jsonLivre = JsonConvert.SerializeObject(new Dictionary<string, object>
+            {
+                { "id",         livre.Id },
+                { "titre",      livre.Titre },
+                { "image",      livre.Image },
+                { "idGenre",    livre.IdGenre },
+                { "idPublic",   livre.IdPublic },
+                { "idRayon",    livre.IdRayon },
+                { "ISBN",       livre.Isbn },
+                { "auteur",     livre.Auteur },
+                { "collection", livre.Collection }
+            });
+            Console.WriteLine("JSON envoyé : " + jsonLivre);
+            try
+            {
+                JObject retour = api.RecupDistant(PUT, "updatelivre", "champs=" + jsonLivre);
+                Console.WriteLine("Retour API : " + retour.ToString());
+                String code = (String)retour["code"];
+                return code.Equals("200");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Erreur : " + ex.Message);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Modifie un dvd dans les tables document et dvd
+        /// </summary>
+        /// <param name="dvd">objet Dvd à modifier</param>
+        /// <returns>true si la modification a pu se faire</returns>
+        public bool ModifierDvd(Dvd dvd)
+        {
+            String jsonDvd = JsonConvert.SerializeObject(new Dictionary<string, object>
+            {
+                { "id",          dvd.Id },
+                { "titre",       dvd.Titre },
+                { "image",       dvd.Image },
+                { "idGenre",     dvd.IdGenre },
+                { "idPublic",    dvd.IdPublic },
+                { "idRayon",     dvd.IdRayon },
+                { "synopsis",    dvd.Synopsis },
+                { "realisateur", dvd.Realisateur },
+                { "duree",       dvd.Duree }
+            });
+            try
+            {
+                JObject retour = api.RecupDistant(PUT, "updatedvd", "champs=" + jsonDvd);
+                String code = (String)retour["code"];
+                return code.Equals("200");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Erreur : " + ex.Message);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Modifie une revue dans les tables document et revue
+        /// </summary>
+        /// <param name="revue">objet Revue à modifier</param>
+        /// <returns>true si la modification a pu se faire</returns>
+        public bool ModifierRevue(Revue revue)
+        {
+            String jsonRevue = JsonConvert.SerializeObject(new Dictionary<string, object>
+            {
+                { "id",              revue.Id },
+                { "titre",           revue.Titre },
+                { "image",           revue.Image },
+                { "idGenre",         revue.IdGenre },
+                { "idPublic",        revue.IdPublic },
+                { "idRayon",         revue.IdRayon },
+                { "periodicite",     revue.Periodicite },
+                { "delaiMiseADispo", revue.DelaiMiseADispo }
+            });
+            try
+            {
+                JObject retour = api.RecupDistant(PUT, "updaterevue", "champs=" + jsonRevue);
+                String code = (String)retour["code"];
+                return code.Equals("200");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Erreur : " + ex.Message);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Supprime un livre dans les tables livre, livres_dvd et document
+        /// </summary>
+        /// <param name="livre">objet Livre à supprimer</param>
+        /// <returns>true si la suppression a pu se faire</returns>
+        public bool SupprimerLivre(Livre livre)
+        {
+            String jsonLivre = JsonConvert.SerializeObject(new Dictionary<string, object>
+            {
+                { "id", livre.Id }
+            });
+            try
+            {
+                JObject retour = api.RecupDistant(DELETE, "deletelivre", "champs=" + jsonLivre);
+                String code = (String)retour["code"];
+                return code.Equals("200");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Erreur : " + ex.Message);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Supprime un dvd dans les tables dvd, livres_dvd et document
+        /// </summary>
+        /// <param name="dvd">objet Dvd à supprimer</param>
+        /// <returns>true si la suppression a pu se faire</returns>
+        public bool SupprimerDvd(Dvd dvd)
+        {
+            String jsonDvd = JsonConvert.SerializeObject(new Dictionary<string, object>
+            {
+                { "id", dvd.Id }
+            });
+            try
+            {
+                JObject retour = api.RecupDistant(DELETE, "deletedvd", "champs=" + jsonDvd);
+                String code = (String)retour["code"];
+                return code.Equals("200");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Erreur : " + ex.Message);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Supprime une revue dans les tables exemplaire, revue et document
+        /// </summary>
+        /// <param name="revue">objet Revue à supprimer</param>
+        /// <returns>true si la suppression a pu se faire</returns>
+        public bool SupprimerRevue(Revue revue)
+        {
+            String jsonRevue = JsonConvert.SerializeObject(new Dictionary<string, object>
+            {
+                { "id", revue.Id }
+            });
+            try
+            {
+                JObject retour = api.RecupDistant(DELETE, "deleterevue", "champs=" + jsonRevue);
+                String code = (String)retour["code"];
+                return code.Equals("200");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Erreur : " + ex.Message);
+                return false;
+            }
+        }
     }
 }

@@ -1239,5 +1239,165 @@ namespace MediaTekDocuments.view
             }
         }
         #endregion
+
+        private void FrmMediatek_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void groupBox1_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void tabLivres_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void MajLivresListe()
+        {
+            lesLivres = controller.GetAllLivres();
+            RemplirLivresListeComplete();
+        }
+
+        private void MajDvdListe()
+        {
+            lesDvd = controller.GetAllDvd();
+            RemplirDvdListeComplete();
+        }
+
+        private void MajRevuesListe()
+        {
+            lesRevues = controller.GetAllRevues();
+            RemplirRevuesListeComplete();
+        }
+
+        private void btnLivresAjout_Click(object sender, EventArgs e)
+        {
+            FrmLivre form = new FrmLivre();
+            form.ShowDialog();
+            MajLivresListe();
+        }
+        private void btnLivresModifier_Click(object sender, EventArgs e)
+        {
+            Livre livre = (Livre)bdgLivresListe.List[bdgLivresListe.Position];
+            FrmLivre form = new FrmLivre(livre);
+            form.ShowDialog();
+            MajLivresListe();
+        }
+        private void btnDvdAjout_Click(object sender, EventArgs e)
+        {
+            FrmDvd form = new FrmDvd();
+            form.ShowDialog();
+            MajDvdListe();
+        }
+        private void btnDvdModifier_Click(object sender, EventArgs e)
+        {
+            Dvd dvd = (Dvd)bdgDvdListe.List[bdgDvdListe.Position];
+            FrmDvd form = new FrmDvd(dvd);
+            form.ShowDialog();
+            MajDvdListe();
+        }
+        private void btnRevuesAjout_Click(object sender, EventArgs e)
+        {
+            FrmRevue form = new FrmRevue();
+            form.ShowDialog();
+            MajRevuesListe();
+        }
+
+        private void btnRevuesModifier_Click(object sender, EventArgs e)
+        {
+            Revue revue = (Revue)bdgRevuesListe.List[bdgRevuesListe.Position];
+            FrmRevue form = new FrmRevue(revue);
+            form.ShowDialog();
+            MajRevuesListe();
+        }
+
+        private void btnLivresSupprimer_Click(object sender, EventArgs e)
+        {
+            if (bdgLivresListe.Current != null)
+            {
+                Livre livre = (Livre)bdgLivresListe.List[bdgLivresListe.Position];
+                if (MessageBox.Show($"Voulez-vous vraiment supprimer '{livre.Titre}' ?",
+                    "Confirmation de suppression",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Warning) == DialogResult.Yes)
+                {
+                    if (controller.SupprimerLivre(livre))
+                    {
+                        MessageBox.Show("Livre supprimé avec succès !");
+                        MajLivresListe();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Erreur lors de la suppression.", "Erreur");
+                    }
+                }
+            }
+            else
+            {
+                MessageBox.Show("Veuillez sélectionner un livre.", "Information");
+            }
+        }
+
+        private void btnDvdSupprimer_Click(object sender, EventArgs e)
+        {
+            if (bdgDvdListe.Current != null)
+            {
+                Dvd dvd = (Dvd)bdgDvdListe.List[bdgDvdListe.Position];
+                if (MessageBox.Show($"Voulez-vous vraiment supprimer '{dvd.Titre}' ?",
+                    "Confirmation de suppression",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Warning) == DialogResult.Yes)
+                {
+                    if (controller.SupprimerDvd(dvd))
+                    {
+                        MessageBox.Show("DVD supprimé avec succès !");
+                        MajDvdListe();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Erreur lors de la suppression.", "Erreur");
+                    }
+                }
+            }
+            else
+            {
+                MessageBox.Show("Veuillez sélectionner un DVD.", "Information");
+            }
+        }
+
+        private void btnRevuesSupprimer_Click(object sender, EventArgs e)
+        {
+            if (bdgRevuesListe.Current != null)
+            {
+                Revue revue = (Revue)bdgRevuesListe.List[bdgRevuesListe.Position];
+                if (MessageBox.Show($"Voulez-vous vraiment supprimer '{revue.Titre}' ?",
+                    "Confirmation de suppression",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Warning) == DialogResult.Yes)
+                {
+                    if (controller.SupprimerRevue(revue))
+                    {
+                        MessageBox.Show("Revue supprimée avec succès !");
+                        MajRevuesListe();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Erreur lors de la suppression.", "Erreur");
+                    }
+                }
+            }
+            else
+            {
+                MessageBox.Show("Veuillez sélectionner une revue.", "Information");
+            }
+        }
     }
 }

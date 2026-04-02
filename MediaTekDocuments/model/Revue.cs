@@ -7,6 +7,7 @@ namespace MediaTekDocuments.model
     public class Revue : Document
     {
         public string Periodicite { get; set; }
+        public string IdPeriodicite { get; set; }
         public int DelaiMiseADispo { get; set; }
 
         public Revue(string id, string titre, string image, string idGenre, string genre,
