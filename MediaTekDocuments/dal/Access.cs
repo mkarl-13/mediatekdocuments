@@ -5,6 +5,7 @@ using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 
 namespace MediaTekDocuments.dal
 {
@@ -17,6 +18,10 @@ namespace MediaTekDocuments.dal
         /// adresse de l'API
         /// </summary>
         private static readonly string uriApi = "http://localhost/rest_mediatekdocuments/";
+        /// <summary>
+        /// informations de connexion récupérées depuis App.config
+        /// </summary>
+        private static readonly string authenticationString = "mediatekdocuments.Properties.Settings.mediatek86AuthenticationString";
         /// <summary>
         /// instance unique de la classe
         /// </summary>
@@ -48,11 +53,9 @@ namespace MediaTekDocuments.dal
         /// </summary>
         private Access()
         {
-            String authenticationString;
             try
             {
-                authenticationString = "admin:adminpwd";
-                api = ApiRest.GetInstance(uriApi, authenticationString);
+                api = ApiRest.GetInstance(uriApi, GetConnectionStringByName(authenticationString));
             }
             catch (Exception e)
             {
@@ -72,6 +75,20 @@ namespace MediaTekDocuments.dal
                 instance = new Access();
             }
             return instance;
+        }
+
+        /// <summary>
+        /// Récupération de la chaîne de connexion
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        static string GetConnectionStringByName(string name)
+        {
+            string returnValue = null;
+            ConnectionStringSettings settings = ConfigurationManager.ConnectionStrings[name];
+            if (settings != null)
+                returnValue = settings.ConnectionString;
+            return returnValue;
         }
 
         /// <summary>
