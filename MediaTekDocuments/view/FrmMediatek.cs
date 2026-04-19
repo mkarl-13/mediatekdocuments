@@ -24,10 +24,51 @@ namespace MediaTekDocuments.view
         /// <summary>
         /// Constructeur : création du contrôleur lié à ce formulaire
         /// </summary>
-        internal FrmMediatek()
+        internal FrmMediatek(string idService)
         {
             InitializeComponent();
             this.controller = new FrmMediatekController();
+            if (idService == "2")
+            {
+                MasquerFonctionnalitees();
+            } else
+            {
+                AfficherAbonnementsFinProche();
+            }
+        }
+
+        public void MasquerFonctionnalitees()
+        {
+            tabOngletsApplication.TabPages.Remove(tabReceptionRevue);
+
+            grpDvdOperations.Visible = false;
+            grpLivresOperations.Visible = false;
+
+            btnRevuesSupprimer.Visible = false;
+            btnRevuesModifier.Visible = false;
+            btnRevuesAjout.Visible = false;
+            btnRevuesCommandes.Visible = false;
+        }
+
+        /// <summary>
+        /// Affiche les abonnements arrivant bientôt à échéance (30 jours)
+        /// </summary>
+        public void AfficherAbonnementsFinProche()
+        {
+            List<CommandeRevue> abonnementsFinProche = controller.GetAbonnementsFinProche();
+            if (abonnementsFinProche.Count > 0)
+            {
+                List<Revue> revues = controller.GetAllRevues();
+                string message = "Abonnements arrivant à échéance dans les 30 jours :\n\n";
+                foreach (CommandeRevue abonnement in abonnementsFinProche)
+                {
+                    Revue revue = revues.Find(x => x.Id.Equals(abonnement.IdRevue));
+                    message += "Revue : " + revue.Titre
+                            + " - Date fin d'abonnement : " + abonnement.DateFinAbonnement.ToShortDateString()
+                            + "\n";
+                }
+                MessageBox.Show(message);
+            }
         }
 
         /// <summary>
@@ -708,6 +749,7 @@ namespace MediaTekDocuments.view
             dgvRevuesListe.Columns["idGenre"].Visible = false;
             dgvRevuesListe.Columns["idPublic"].Visible = false;
             dgvRevuesListe.Columns["image"].Visible = false;
+            dgvRevuesListe.Columns["idPeriodicite"].Visible = false;
             dgvRevuesListe.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
             dgvRevuesListe.Columns["id"].DisplayIndex = 0;
             dgvRevuesListe.Columns["titre"].DisplayIndex = 1;
@@ -1240,26 +1282,6 @@ namespace MediaTekDocuments.view
         }
         #endregion
 
-        private void FrmMediatek_Load(object sender, EventArgs e)
-        {
-
-        }
-
-        private void groupBox1_Enter(object sender, EventArgs e)
-        {
-
-        }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void tabLivres_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void MajLivresListe()
         {
             lesLivres = controller.GetAllLivres();
@@ -1329,7 +1351,7 @@ namespace MediaTekDocuments.view
                     MessageBoxButtons.YesNo,
                     MessageBoxIcon.Warning) == DialogResult.Yes)
                 {
-                    if (controller.SupprimerLivre(livre))
+                    if (controller.SupprimerLivre(livre.Id))
                     {
                         MessageBox.Show("Livre supprimé avec succès !");
                         MajLivresListe();
@@ -1356,7 +1378,7 @@ namespace MediaTekDocuments.view
                     MessageBoxButtons.YesNo,
                     MessageBoxIcon.Warning) == DialogResult.Yes)
                 {
-                    if (controller.SupprimerDvd(dvd))
+                    if (controller.SupprimerDvd(dvd.Id))
                     {
                         MessageBox.Show("DVD supprimé avec succès !");
                         MajDvdListe();
@@ -1383,7 +1405,7 @@ namespace MediaTekDocuments.view
                     MessageBoxButtons.YesNo,
                     MessageBoxIcon.Warning) == DialogResult.Yes)
                 {
-                    if (controller.SupprimerRevue(revue))
+                    if (controller.SupprimerRevue(revue.Id))
                     {
                         MessageBox.Show("Revue supprimée avec succès !");
                         MajRevuesListe();
@@ -1398,6 +1420,29 @@ namespace MediaTekDocuments.view
             {
                 MessageBox.Show("Veuillez sélectionner une revue.", "Information");
             }
+        }
+
+        private void btnVoirCommandesDVD_Click(object sender, EventArgs e)
+        {
+            FrmCommandesDVD form = new FrmCommandesDVD();
+            form.ShowDialog();
+        }
+
+        private void FrmMediatek_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            FrmCommandesLivre form = new FrmCommandesLivre();
+            form.ShowDialog();
+        }
+
+        private void btnRevuesCommandes_Click(object sender, EventArgs e)
+        {
+            FrmCommandesRevues form = new FrmCommandesRevues();
+            form.ShowDialog();
         }
     }
 }

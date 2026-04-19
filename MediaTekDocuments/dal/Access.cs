@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using MediaTekDocuments.manager;
 using MediaTekDocuments.model;
-using MediaTekDocuments.manager;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
-using System.Configuration;
-using System.Linq;
+using System;
+using System.Collections.Generic;
 
 namespace MediaTekDocuments.dal
 {
@@ -271,6 +269,16 @@ namespace MediaTekDocuments.dal
         }
 
         /// <summary>
+        /// Retourne tous les suivis à partir de la BDD
+        /// </summary>
+        /// <returns>Liste d'objets Suivi</returns>
+        public List<Suivi> GetAllSuivis()
+        {
+            List<Suivi> lesSuivis = TraitementRecup<Suivi>(GET, "suivi", null);
+            return lesSuivis;
+        }
+
+        /// <summary>
         /// Retourne le prochain id de revue libre pour l'insertion
         /// </summary>
         /// <returns>Prochain id disponible pour une revue</returns>
@@ -288,6 +296,16 @@ namespace MediaTekDocuments.dal
         {
             List<Document> liste = TraitementRecup<Document>(GET, "nextidrevue", null);
             return liste?[0].Id ?? "10001";
+        }
+
+        /// <summary>
+        /// Retourne le prochain id de commande libre pour l'insertion
+        /// </summary>
+        /// <returns>Prochain id disponible pour une commande</returns>
+        public string GetNextIdCommande()
+        {
+            List<Document> liste = TraitementRecup<Document>(GET, "nextidcommande", null);
+            return liste?[0].Id ?? "00001";
         }
 
         /// <summary>
@@ -452,6 +470,26 @@ namespace MediaTekDocuments.dal
             }
         }
 
+        public bool ModifierSuiviCommandeLivreDvd(string idCommande, int idSuivi)
+        {
+            String jsonCommande = JsonConvert.SerializeObject(new Dictionary<string, object>
+            {
+                { "id", idCommande },
+                { "suivi", idSuivi }
+            });
+            try
+            {
+                JObject retour = api.RecupDistant(PUT, "updatecommande", "champs=" + jsonCommande);
+                String code = (String)retour["code"];
+                return code.Equals("200");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Erreur : " + ex.Message);
+                return false;
+            }
+        }
+
         /// <summary>
         /// Modifie une revue dans les tables document et revue
         /// </summary>
@@ -484,15 +522,15 @@ namespace MediaTekDocuments.dal
         }
 
         /// <summary>
-        /// Supprime un livre dans les tables livre, livres_dvd et document
+        /// Supprime un livre dans les tables exemplaire, livre, livres_dvd et document
         /// </summary>
-        /// <param name="livre">objet Livre à supprimer</param>
+        /// <param name="id">id du livre à supprimer</param>
         /// <returns>true si la suppression a pu se faire</returns>
-        public bool SupprimerLivre(Livre livre)
+        public bool SupprimerLivre(string id)
         {
             String jsonLivre = JsonConvert.SerializeObject(new Dictionary<string, object>
             {
-                { "id", livre.Id }
+                { "id", id }
             });
             try
             {
@@ -510,13 +548,13 @@ namespace MediaTekDocuments.dal
         /// <summary>
         /// Supprime un dvd dans les tables dvd, livres_dvd et document
         /// </summary>
-        /// <param name="dvd">objet Dvd à supprimer</param>
+        /// <param name="id">id du dvd à supprimer</param>
         /// <returns>true si la suppression a pu se faire</returns>
-        public bool SupprimerDvd(Dvd dvd)
+        public bool SupprimerDvd(string id)
         {
             String jsonDvd = JsonConvert.SerializeObject(new Dictionary<string, object>
             {
-                { "id", dvd.Id }
+                { "id", id }
             });
             try
             {
@@ -534,13 +572,13 @@ namespace MediaTekDocuments.dal
         /// <summary>
         /// Supprime une revue dans les tables exemplaire, revue et document
         /// </summary>
-        /// <param name="revue">objet Revue à supprimer</param>
+        /// <param name="id">id de la revue à supprimer</param>
         /// <returns>true si la suppression a pu se faire</returns>
-        public bool SupprimerRevue(Revue revue)
+        public bool SupprimerRevue(string id)
         {
             String jsonRevue = JsonConvert.SerializeObject(new Dictionary<string, object>
             {
-                { "id", revue.Id }
+                { "id", id }
             });
             try
             {
@@ -552,6 +590,157 @@ namespace MediaTekDocuments.dal
             {
                 Console.WriteLine("Erreur : " + ex.Message);
                 return false;
+            }
+        }
+
+        public List<CommandeLivreDvd> GetCommandesLivreDvd(string idDocument)
+        {
+            String jsonIdDocument = convertToJson("id", idDocument);
+            List<CommandeLivreDvd> lesCommandes = TraitementRecup<CommandeLivreDvd>(GET, "commandeslivresdvd/" + jsonIdDocument, null);
+            return lesCommandes;
+        }
+
+        public List<CommandeRevue> GetCommandesRevue(string idRevue)
+        {
+            String jsonIdRevue = convertToJson("id", idRevue);
+            List<CommandeRevue> lesCommandes = TraitementRecup<CommandeRevue>(GET, "commandesrevues/" + jsonIdRevue, null);
+            return lesCommandes;
+        }
+
+        /// <summary>
+        /// Crée une commande dans les tables commande et commandedocument
+        /// </summary>
+        /// <param name="commande">objet Commande à insérer</param>
+        /// <returns>true si l'insertion a pu se faire</returns>
+        public bool CreerCommandeLivreDvd(CommandeLivreDvd commande)
+        {
+            String jsonCommande = JsonConvert.SerializeObject(new Dictionary<string, object>
+            {
+                { "id",              commande.Id },
+                { "dateCommande",           commande.DateCommande },
+                { "montant",           commande.Montant },
+                { "nbExemplaire",         commande.NbExemplaire },
+                { "idLivreDvd",        commande.IdLivreDvd },
+                { "suivi", commande.IdSuivi }
+            }, new CustomDateTimeConverter());
+            try
+            {
+                JObject retour = api.RecupDistant(POST, "insertcommande", "champs=" + jsonCommande);
+                String code = (String)retour["code"];
+                return code.Equals("200");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Erreur : " + ex.Message);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Crée une commande/abonnement dans les tables commande et abonnement
+        /// </summary>
+        /// <param name="commande">objet CommandeRevue à insérer</param>
+        /// <returns>true si l'insertion a pu se faire</returns>
+        public bool CreerCommandeRevue(CommandeRevue commande)
+        {
+            String jsonCommande = JsonConvert.SerializeObject(new Dictionary<string, object>
+            {
+                { "id",                 commande.Id },
+                { "dateCommande",       commande.DateCommande },
+                { "montant",            commande.Montant },
+                { "dateFinAbonnement",  commande.DateFinAbonnement },
+                { "idRevue",            commande.IdRevue },
+            }, new CustomDateTimeConverter());
+            try
+            {
+                JObject retour = api.RecupDistant(POST, "insertcommanderevue", "champs=" + jsonCommande);
+                String code = (String)retour["code"];
+                return code.Equals("200");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Erreur : " + ex.Message);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Supprime une commande dans les tables commandedocument et commande
+        /// </summary>
+        /// <param name="id">id de la commande à supprimer</param>
+        /// <returns>true si la suppression a pu se faire</returns>
+        public bool SupprimerCommandeLivreDvd(string id)
+        {
+            String jsonCommande = JsonConvert.SerializeObject(new Dictionary<string, object>
+            {
+                { "id", id }
+            });
+            try
+            {
+                JObject retour = api.RecupDistant(DELETE, "deletecommande", "champs=" + jsonCommande);
+                String code = (String)retour["code"];
+                return code.Equals("200");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Erreur : " + ex.Message);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Supprime un abonnement / commande dans les tables abonnement et commande
+        /// </summary>
+        /// <param name="id">id de la commande à supprimer</param>
+        /// <returns>true si la suppression a pu se faire</returns>
+        public bool SupprimerCommandeRevue(string id)
+        {
+            String jsonCommande = JsonConvert.SerializeObject(new Dictionary<string, object>
+            {
+                { "id", id }
+            });
+            try
+            {
+                JObject retour = api.RecupDistant(DELETE, "deletecommanderevue", "champs=" + jsonCommande);
+                String code = (String)retour["code"];
+                return code.Equals("200");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Erreur : " + ex.Message);
+                return false;
+            }
+        }
+        public List<CommandeRevue> GetAbonnementsFinProche()
+        {
+            List<CommandeRevue> lesCommandes = TraitementRecup<CommandeRevue>(GET, "abonnementsfinproche", null);
+            return lesCommandes;
+        }
+
+        public string GetVerifierAuthentification(string login, string mdp)
+        {
+            String json = JsonConvert.SerializeObject(new Dictionary<string, object>
+            {
+                { "login", login },
+                { "mdp", mdp }
+            });
+            try
+            {
+                JObject retour = api.RecupDistant(GET, "controleauthentification/" + json, null);
+                String code = (String)retour["code"];
+                if (code.Equals("200"))
+                {
+                    String resultString = JsonConvert.SerializeObject(retour["result"]);
+                    List<JObject> liste = JsonConvert.DeserializeObject<List<JObject>>(resultString);
+                    if (liste != null && liste.Count > 0)
+                        return liste[0]["idService"].ToString();
+                }
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Erreur : " + ex.Message);
+                return null;
             }
         }
     }

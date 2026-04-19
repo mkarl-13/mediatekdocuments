@@ -1,13 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using MediaTekDocuments.dal;
 using MediaTekDocuments.model;
-using MediaTekDocuments.dal;
+using System;
+using System.Collections.Generic;
 
 namespace MediaTekDocuments.controller
 {
     /// <summary>
     /// Contrôleur lié à FrmMediatek
     /// </summary>
-    class FrmMediatekController
+    public class FrmMediatekController
     {
         /// <summary>
         /// Objet d'accès aux données
@@ -134,6 +135,30 @@ namespace MediaTekDocuments.controller
         }
 
         /// <summary>
+        /// Récupère le prochain id de commande à créer
+        /// </summary>
+        /// <returns></returns>
+        public string GetNextIdCommande()
+        {
+            return access.GetNextIdCommande();
+        }
+
+        public List<CommandeLivreDvd> GetCommandesLivreDvd(string idLivresDvd)
+        {
+            return access.GetCommandesLivreDvd(idLivresDvd);
+        }
+
+        public List<CommandeRevue> GetCommandesRevue(string idRevue)
+        {
+            return access.GetCommandesRevue(idRevue);
+        }
+
+        public List<Suivi> GetAllSuivis()
+        {
+            return access.GetAllSuivis();
+        }
+
+        /// <summary>
         /// Crée un livre dans la BDD
         /// </summary>
         /// <param name="livre">objet Livre à insérer</param>
@@ -196,31 +221,80 @@ namespace MediaTekDocuments.controller
         /// <summary>
         /// Supprime un livre dans la BDD
         /// </summary>
-        /// <param name="livre">objet livre à supprimer</param>
+        /// <param name="id">objet livre à supprimer</param>
         /// <returns>true si la suppression a pu se faire</returns>
-        public bool SupprimerLivre(Livre livre)
+        public bool SupprimerLivre(string id)
         {
-            return access.SupprimerLivre(livre);
+            return access.SupprimerLivre(id);
         }
 
         /// <summary>
         /// Supprime un dvd dans la BDD
         /// </summary>
-        /// <param name="dvd">objet dvd à supprimer</param>
+        /// <param name="id">objet dvd à supprimer</param>
         /// <returns>true si la suppression a pu se faire</returns>
-        public bool SupprimerDvd(Dvd dvd)
+        public bool SupprimerDvd(string id)
         {
-            return access.SupprimerDvd(dvd);
+            return access.SupprimerDvd(id);
         }
 
         /// <summary>
         /// Supprime une revue dans la BDD
         /// </summary>
-        /// <param name="revue">objet revue à supprimer</param>
+        /// <param name="id">objet revue à supprimer</param>
         /// <returns>true si la suppression a pu se faire</returns>
-        public bool SupprimerRevue(Revue revue)
+        public bool SupprimerRevue(string id)
         {
-            return access.SupprimerRevue(revue);
+            return access.SupprimerRevue(id);
+        }
+
+        public bool CreerCommandeLivreDvd(CommandeLivreDvd commande)
+        {
+            return access.CreerCommandeLivreDvd(commande);
+        }
+
+        public bool CreerCommandeRevue(CommandeRevue commande)
+        {
+            return access.CreerCommandeRevue(commande);
+        }
+
+        public bool ModifierSuiviCommandeLivreDvd(string idCommande, int idSuivi)
+        {
+            return access.ModifierSuiviCommandeLivreDvd(idCommande, idSuivi);
+        }
+
+        public bool SupprimerCommandeLivreDvd(CommandeLivreDvd commande)
+        {
+            if (commande.IdSuivi == 3 || commande.IdSuivi == 4)
+            {
+                return false;
+            }
+            return access.SupprimerCommandeLivreDvd(commande.Id);
+        }
+
+        public bool SupprimerCommandeRevue(string commandeId)
+        {
+            return access.SupprimerCommandeRevue(commandeId);
+        }
+
+        /// <summary>
+        /// Renvoie true si un exemplaire/parution fait partie d'un abonnement
+        /// </summary>
+        /// <param name="dateCommande"></param>
+        /// <param name="dateFinAbonnement"></param>
+        /// <param name="dateParution"></param>
+        /// <returns></returns>
+        public bool ParutionDansAbonnement(
+            DateTime dateCommande,
+            DateTime dateFinAbonnement,
+            DateTime dateParution)
+        {
+            return dateParution >= dateCommande && dateParution <= dateFinAbonnement;
+        }
+
+        public List<CommandeRevue> GetAbonnementsFinProche()
+        {
+            return access.GetAbonnementsFinProche();
         }
     }
 }

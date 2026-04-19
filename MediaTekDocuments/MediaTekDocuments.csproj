@@ -61,9 +61,38 @@
     <Reference Include="ZstdNet, Version=1.4.5.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="controller\FrmAuthentificationController.cs" />
     <Compile Include="manager\ApiRest.cs" />
     <Compile Include="controller\FrmMediatekController.cs" />
     <Compile Include="dal\Access.cs" />
+    <Compile Include="model\Commande.cs" />
+    <Compile Include="model\CommandeLivreDvd.cs" />
+    <Compile Include="model\CommandeRevue.cs" />
+    <Compile Include="model\Suivi.cs" />
+    <Compile Include="view\FrmAuthentification.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="view\FrmAuthentification.Designer.cs">
+      <DependentUpon>FrmAuthentification.cs</DependentUpon>
+    </Compile>
+    <Compile Include="view\FrmCommandesDVD.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="view\FrmCommandesDVD.Designer.cs">
+      <DependentUpon>FrmCommandesDVD.cs</DependentUpon>
+    </Compile>
+    <Compile Include="view\FrmCommandesLivre.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="view\FrmCommandesLivre.Designer.cs">
+      <DependentUpon>FrmCommandesLivre.cs</DependentUpon>
+    </Compile>
+    <Compile Include="view\FrmCommandesRevues.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="view\FrmCommandesRevues.Designer.cs">
+      <DependentUpon>FrmCommandesRevues.cs</DependentUpon>
+    </Compile>
     <Compile Include="view\FrmDvd.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -110,6 +139,18 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="view\FrmAuthentification.resx">
+      <DependentUpon>FrmAuthentification.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="view\FrmCommandesDVD.resx">
+      <DependentUpon>FrmCommandesDVD.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="view\FrmCommandesLivre.resx">
+      <DependentUpon>FrmCommandesLivre.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="view\FrmCommandesRevues.resx">
+      <DependentUpon>FrmCommandesRevues.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="view\FrmDvd.resx">
       <DependentUpon>FrmDvd.cs</DependentUpon>
     </EmbeddedResource>
