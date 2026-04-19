@@ -160,7 +160,6 @@
             this.lblRayon.Size = new System.Drawing.Size(44, 13);
             this.lblRayon.TabIndex = 21;
             this.lblRayon.Text = "Rayon :";
-            this.lblRayon.Click += new System.EventHandler(this.lblCollection_Click);
             // 
             // lblTitre
             // 

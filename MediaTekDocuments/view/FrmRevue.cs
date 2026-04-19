@@ -2,12 +2,6 @@
 using MediaTekDocuments.model;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace MediaTekDocuments.view
@@ -64,11 +58,6 @@ namespace MediaTekDocuments.view
             cbo.DisplayMember = "Libelle";
             cbo.ValueMember = "Id";
             cbo.SelectedIndex = 0;
-        }
-
-        private void lblCollection_Click(object sender, EventArgs e)
-        {
-
         }
 
         private void btnAnnuler_Click(object sender, EventArgs e)

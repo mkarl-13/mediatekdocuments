@@ -135,8 +135,7 @@ namespace MediaTekDocuments.view
                 cbxRayons.SelectedIndex = -1;
                 cbxPublics.SelectedIndex = -1;
                 txbNumRecherche.Text = "";
-                List<Revue> lesRevuesParTitre;
-                lesRevuesParTitre = lesRevues.FindAll(x => x.Titre.ToLower().Contains(txbTitreRecherche.Text.ToLower()));
+                List<Revue> lesRevuesParTitre = lesRevues.FindAll(x => x.Titre.ToLower().Contains(txbTitreRecherche.Text.ToLower()));
                 RemplirRevuesListe(lesRevuesParTitre);
             }
             else
@@ -252,8 +251,6 @@ namespace MediaTekDocuments.view
                 {
                     Revue revue = (Revue)bdgRevuesListe.List[bdgRevuesListe.Position];
                     AfficheInfos(revue);
-
-                    // Affiche les abonnement pour la revue
                     lesCommandes = controller.GetCommandesRevue(revue.Id);
                     RemplirCommandesListe(lesCommandes);
                 }
@@ -430,7 +427,8 @@ namespace MediaTekDocuments.view
             if (controller.CreerCommandeRevue(commande))
             {
                 MessageBox.Show("Commande enregistrée.");
-            } else
+            }
+            else
             {
                 MessageBox.Show("Erreur lors de l'enregistrement.");
             }

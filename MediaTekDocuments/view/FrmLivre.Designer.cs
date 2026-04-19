@@ -56,7 +56,6 @@
             this.lblTitre.Size = new System.Drawing.Size(34, 13);
             this.lblTitre.TabIndex = 0;
             this.lblTitre.Text = "Titre :";
-            this.lblTitre.Click += new System.EventHandler(this.label1_Click);
             // 
             // lblCollection
             // 
@@ -84,7 +83,6 @@
             this.lblAuteur.Size = new System.Drawing.Size(70, 13);
             this.lblAuteur.TabIndex = 3;
             this.lblAuteur.Text = "Auteur(trice) :";
-            this.lblAuteur.Click += new System.EventHandler(this.lblAuteur_Click);
             // 
             // lblGenre
             // 
@@ -112,7 +110,6 @@
             this.lblImage.Size = new System.Drawing.Size(106, 13);
             this.lblImage.TabIndex = 6;
             this.lblImage.Text = "Chemin vers l\'image :";
-            this.lblImage.Click += new System.EventHandler(this.label7_Click);
             // 
             // cboRayon
             // 

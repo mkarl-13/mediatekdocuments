@@ -276,9 +276,9 @@ namespace MediaTekDocuments.dal
         }
 
         /// <summary>
-        /// Retourne le prochain id de revue libre pour l'insertion
+        /// Retourne le prochain id de livre libre pour l'insertion
         /// </summary>
-        /// <returns>Prochain id disponible pour une revue</returns>
+        /// <returns>Prochain id disponible pour un livre</returns>
         public string GetNextIdLivre()
         {
             List<Document> liste = TraitementRecup<Document>(GET, "nextidlivre", null);
@@ -296,9 +296,9 @@ namespace MediaTekDocuments.dal
         }
 
         /// <summary>
-        /// Retourne le prochain id de revue libre pour l'insertion
+        /// Retourne le prochain id de dvd libre pour l'insertion
         /// </summary>
-        /// <returns>Prochain id disponible pour une revue</returns>
+        /// <returns>Prochain id disponible pour un dvd</returns>
         public string GetNextIdDvd()
         {
             List<Document> liste = TraitementRecup<Document>(GET, "nextiddvd", null);
@@ -332,7 +332,7 @@ namespace MediaTekDocuments.dal
         /// <returns>true si l'insertion a pu se faire</returns>
         public bool CreerLivre(Livre livre)
         {
-            String jsonLivre = JsonConvert.SerializeObject(new Dictionary<string, object>
+            string jsonLivre = JsonConvert.SerializeObject(new Dictionary<string, object>
             {
                 { "id",         livre.Id },
                 { "titre",      livre.Titre },
@@ -344,16 +344,14 @@ namespace MediaTekDocuments.dal
                 { "auteur",     livre.Auteur },
                 { "collection", livre.Collection }
             });
-            Console.WriteLine("JSON envoyé : " + jsonLivre);
             try
             {
                 JObject retour = api.RecupDistant(POST, "insertlivre", "champs=" + jsonLivre);
-                String code = (String)retour["code"];
+                string code = (string)retour["code"];
                 return code.Equals("200");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Console.WriteLine("Erreur : " + ex.Message);
                 return false;
             }
         }
@@ -365,7 +363,7 @@ namespace MediaTekDocuments.dal
         /// <returns>true si l'insertion a pu se faire</returns>
         public bool CreerDvd(Dvd dvd)
         {
-            String jsonDvd = JsonConvert.SerializeObject(new Dictionary<string, object>
+            string jsonDvd = JsonConvert.SerializeObject(new Dictionary<string, object>
             {
                 { "id",          dvd.Id },
                 { "titre",       dvd.Titre },
@@ -380,12 +378,11 @@ namespace MediaTekDocuments.dal
             try
             {
                 JObject retour = api.RecupDistant(POST, "insertdvd", "champs=" + jsonDvd);
-                String code = (String)retour["code"];
+                string code = (string)retour["code"];
                 return code.Equals("200");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Console.WriteLine("Erreur : " + ex.Message);
                 return false;
             }
         }
@@ -397,7 +394,7 @@ namespace MediaTekDocuments.dal
         /// <returns>true si l'insertion a pu se faire</returns>
         public bool CreerRevue(Revue revue)
         {
-            String jsonRevue = JsonConvert.SerializeObject(new Dictionary<string, object>
+            string jsonRevue = JsonConvert.SerializeObject(new Dictionary<string, object>
             {
                 { "id",              revue.Id },
                 { "titre",           revue.Titre },
@@ -411,12 +408,11 @@ namespace MediaTekDocuments.dal
             try
             {
                 JObject retour = api.RecupDistant(POST, "insertrevue", "champs=" + jsonRevue);
-                String code = (String)retour["code"];
+                string code = (string)retour["code"];
                 return code.Equals("200");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Console.WriteLine("Erreur : " + ex.Message);
                 return false;
             }
         }
@@ -428,7 +424,7 @@ namespace MediaTekDocuments.dal
         /// <returns>true si l'insertion a pu se faire</returns>
         public bool ModifierLivre(Livre livre)
         {
-            String jsonLivre = JsonConvert.SerializeObject(new Dictionary<string, object>
+            string jsonLivre = JsonConvert.SerializeObject(new Dictionary<string, object>
             {
                 { "id",         livre.Id },
                 { "titre",      livre.Titre },
@@ -440,17 +436,14 @@ namespace MediaTekDocuments.dal
                 { "auteur",     livre.Auteur },
                 { "collection", livre.Collection }
             });
-            Console.WriteLine("JSON envoyé : " + jsonLivre);
             try
             {
                 JObject retour = api.RecupDistant(PUT, "updatelivre", "champs=" + jsonLivre);
-                Console.WriteLine("Retour API : " + retour.ToString());
-                String code = (String)retour["code"];
+                string code = (string)retour["code"];
                 return code.Equals("200");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Console.WriteLine("Erreur : " + ex.Message);
                 return false;
             }
         }
@@ -462,7 +455,7 @@ namespace MediaTekDocuments.dal
         /// <returns>true si la modification a pu se faire</returns>
         public bool ModifierDvd(Dvd dvd)
         {
-            String jsonDvd = JsonConvert.SerializeObject(new Dictionary<string, object>
+            string jsonDvd = JsonConvert.SerializeObject(new Dictionary<string, object>
             {
                 { "id",          dvd.Id },
                 { "titre",       dvd.Titre },
@@ -477,19 +470,24 @@ namespace MediaTekDocuments.dal
             try
             {
                 JObject retour = api.RecupDistant(PUT, "updatedvd", "champs=" + jsonDvd);
-                String code = (String)retour["code"];
+                string code = (string)retour["code"];
                 return code.Equals("200");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Console.WriteLine("Erreur : " + ex.Message);
                 return false;
             }
         }
 
+        /// <summary>
+        /// Modifie le suivi d'une commande de livre ou dvd dans la BDD
+        /// </summary>
+        /// <param name="idCommande">id de la commande à modifier</param>
+        /// <param name="idSuivi">nouvel id de suivi</param>
+        /// <returns>true si la modification a pu se faire</returns>
         public bool ModifierSuiviCommandeLivreDvd(string idCommande, int idSuivi)
         {
-            String jsonCommande = JsonConvert.SerializeObject(new Dictionary<string, object>
+            string jsonCommande = JsonConvert.SerializeObject(new Dictionary<string, object>
             {
                 { "id", idCommande },
                 { "suivi", idSuivi }
@@ -497,12 +495,11 @@ namespace MediaTekDocuments.dal
             try
             {
                 JObject retour = api.RecupDistant(PUT, "updatecommande", "champs=" + jsonCommande);
-                String code = (String)retour["code"];
+                string code = (string)retour["code"];
                 return code.Equals("200");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Console.WriteLine("Erreur : " + ex.Message);
                 return false;
             }
         }
@@ -514,7 +511,7 @@ namespace MediaTekDocuments.dal
         /// <returns>true si la modification a pu se faire</returns>
         public bool ModifierRevue(Revue revue)
         {
-            String jsonRevue = JsonConvert.SerializeObject(new Dictionary<string, object>
+            string jsonRevue = JsonConvert.SerializeObject(new Dictionary<string, object>
             {
                 { "id",              revue.Id },
                 { "titre",           revue.Titre },
@@ -528,12 +525,11 @@ namespace MediaTekDocuments.dal
             try
             {
                 JObject retour = api.RecupDistant(PUT, "updaterevue", "champs=" + jsonRevue);
-                String code = (String)retour["code"];
+                string code = (string)retour["code"];
                 return code.Equals("200");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Console.WriteLine("Erreur : " + ex.Message);
                 return false;
             }
         }
@@ -545,19 +541,18 @@ namespace MediaTekDocuments.dal
         /// <returns>true si la suppression a pu se faire</returns>
         public bool SupprimerLivre(string id)
         {
-            String jsonLivre = JsonConvert.SerializeObject(new Dictionary<string, object>
+            string jsonLivre = JsonConvert.SerializeObject(new Dictionary<string, object>
             {
                 { "id", id }
             });
             try
             {
                 JObject retour = api.RecupDistant(DELETE, "deletelivre", "champs=" + jsonLivre);
-                String code = (String)retour["code"];
+                string code = (string)retour["code"];
                 return code.Equals("200");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Console.WriteLine("Erreur : " + ex.Message);
                 return false;
             }
         }
@@ -569,19 +564,18 @@ namespace MediaTekDocuments.dal
         /// <returns>true si la suppression a pu se faire</returns>
         public bool SupprimerDvd(string id)
         {
-            String jsonDvd = JsonConvert.SerializeObject(new Dictionary<string, object>
+            string jsonDvd = JsonConvert.SerializeObject(new Dictionary<string, object>
             {
                 { "id", id }
             });
             try
             {
                 JObject retour = api.RecupDistant(DELETE, "deletedvd", "champs=" + jsonDvd);
-                String code = (String)retour["code"];
+                string code = (string)retour["code"];
                 return code.Equals("200");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Console.WriteLine("Erreur : " + ex.Message);
                 return false;
             }
         }
@@ -593,33 +587,42 @@ namespace MediaTekDocuments.dal
         /// <returns>true si la suppression a pu se faire</returns>
         public bool SupprimerRevue(string id)
         {
-            String jsonRevue = JsonConvert.SerializeObject(new Dictionary<string, object>
+            string jsonRevue = JsonConvert.SerializeObject(new Dictionary<string, object>
             {
                 { "id", id }
             });
             try
             {
                 JObject retour = api.RecupDistant(DELETE, "deleterevue", "champs=" + jsonRevue);
-                String code = (String)retour["code"];
+                string code = (string)retour["code"];
                 return code.Equals("200");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Console.WriteLine("Erreur : " + ex.Message);
                 return false;
             }
         }
 
+        /// <summary>
+        /// Retourne les commandes d'un livre ou dvd à partir de la BDD
+        /// </summary>
+        /// <param name="idDocument">id du livre ou dvd concerné</param>
+        /// <returns>Liste d'objets CommandeLivreDvd</returns>
         public List<CommandeLivreDvd> GetCommandesLivreDvd(string idDocument)
         {
-            String jsonIdDocument = convertToJson("id", idDocument);
+            string jsonIdDocument = convertToJson("id", idDocument);
             List<CommandeLivreDvd> lesCommandes = TraitementRecup<CommandeLivreDvd>(GET, "commandeslivresdvd/" + jsonIdDocument, null);
             return lesCommandes;
         }
 
+        /// <summary>
+        /// Retourne les abonnements d'une revue à partir de la BDD
+        /// </summary>
+        /// <param name="idRevue">id de la revue concernée</param>
+        /// <returns>Liste d'objets CommandeRevue</returns>
         public List<CommandeRevue> GetCommandesRevue(string idRevue)
         {
-            String jsonIdRevue = convertToJson("id", idRevue);
+            string jsonIdRevue = convertToJson("id", idRevue);
             List<CommandeRevue> lesCommandes = TraitementRecup<CommandeRevue>(GET, "commandesrevues/" + jsonIdRevue, null);
             return lesCommandes;
         }
@@ -631,24 +634,23 @@ namespace MediaTekDocuments.dal
         /// <returns>true si l'insertion a pu se faire</returns>
         public bool CreerCommandeLivreDvd(CommandeLivreDvd commande)
         {
-            String jsonCommande = JsonConvert.SerializeObject(new Dictionary<string, object>
+            string jsonCommande = JsonConvert.SerializeObject(new Dictionary<string, object>
             {
-                { "id",              commande.Id },
-                { "dateCommande",           commande.DateCommande },
-                { "montant",           commande.Montant },
-                { "nbExemplaire",         commande.NbExemplaire },
-                { "idLivreDvd",        commande.IdLivreDvd },
-                { "suivi", commande.IdSuivi }
+                { "id",           commande.Id },
+                { "dateCommande", commande.DateCommande },
+                { "montant",      commande.Montant },
+                { "nbExemplaire", commande.NbExemplaire },
+                { "idLivreDvd",   commande.IdLivreDvd },
+                { "suivi",        commande.IdSuivi }
             }, new CustomDateTimeConverter());
             try
             {
                 JObject retour = api.RecupDistant(POST, "insertcommande", "champs=" + jsonCommande);
-                String code = (String)retour["code"];
+                string code = (string)retour["code"];
                 return code.Equals("200");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Console.WriteLine("Erreur : " + ex.Message);
                 return false;
             }
         }
@@ -660,23 +662,22 @@ namespace MediaTekDocuments.dal
         /// <returns>true si l'insertion a pu se faire</returns>
         public bool CreerCommandeRevue(CommandeRevue commande)
         {
-            String jsonCommande = JsonConvert.SerializeObject(new Dictionary<string, object>
+            string jsonCommande = JsonConvert.SerializeObject(new Dictionary<string, object>
             {
-                { "id",                 commande.Id },
-                { "dateCommande",       commande.DateCommande },
-                { "montant",            commande.Montant },
-                { "dateFinAbonnement",  commande.DateFinAbonnement },
-                { "idRevue",            commande.IdRevue },
+                { "id",                commande.Id },
+                { "dateCommande",      commande.DateCommande },
+                { "montant",           commande.Montant },
+                { "dateFinAbonnement", commande.DateFinAbonnement },
+                { "idRevue",           commande.IdRevue }
             }, new CustomDateTimeConverter());
             try
             {
                 JObject retour = api.RecupDistant(POST, "insertcommanderevue", "champs=" + jsonCommande);
-                String code = (String)retour["code"];
+                string code = (string)retour["code"];
                 return code.Equals("200");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Console.WriteLine("Erreur : " + ex.Message);
                 return false;
             }
         }
@@ -688,19 +689,18 @@ namespace MediaTekDocuments.dal
         /// <returns>true si la suppression a pu se faire</returns>
         public bool SupprimerCommandeLivreDvd(string id)
         {
-            String jsonCommande = JsonConvert.SerializeObject(new Dictionary<string, object>
+            string jsonCommande = JsonConvert.SerializeObject(new Dictionary<string, object>
             {
                 { "id", id }
             });
             try
             {
                 JObject retour = api.RecupDistant(DELETE, "deletecommande", "champs=" + jsonCommande);
-                String code = (String)retour["code"];
+                string code = (string)retour["code"];
                 return code.Equals("200");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Console.WriteLine("Erreur : " + ex.Message);
                 return false;
             }
         }
@@ -712,31 +712,41 @@ namespace MediaTekDocuments.dal
         /// <returns>true si la suppression a pu se faire</returns>
         public bool SupprimerCommandeRevue(string id)
         {
-            String jsonCommande = JsonConvert.SerializeObject(new Dictionary<string, object>
+            string jsonCommande = JsonConvert.SerializeObject(new Dictionary<string, object>
             {
                 { "id", id }
             });
             try
             {
                 JObject retour = api.RecupDistant(DELETE, "deletecommanderevue", "champs=" + jsonCommande);
-                String code = (String)retour["code"];
+                string code = (string)retour["code"];
                 return code.Equals("200");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Console.WriteLine("Erreur : " + ex.Message);
                 return false;
             }
         }
+
+        /// <summary>
+        /// Retourne les abonnements dont la fin est proche à partir de la BDD
+        /// </summary>
+        /// <returns>Liste d'objets CommandeRevue</returns>
         public List<CommandeRevue> GetAbonnementsFinProche()
         {
             List<CommandeRevue> lesCommandes = TraitementRecup<CommandeRevue>(GET, "abonnementsfinproche", null);
             return lesCommandes;
         }
 
+        /// <summary>
+        /// Vérifie les identifiants de connexion via l'API et retourne l'id du service
+        /// </summary>
+        /// <param name="login">login de l'utilisateur</param>
+        /// <param name="mdp">mot de passe de l'utilisateur</param>
+        /// <returns>id du service si authentification réussie, null sinon</returns>
         public string GetVerifierAuthentification(string login, string mdp)
         {
-            String json = JsonConvert.SerializeObject(new Dictionary<string, object>
+            string json = JsonConvert.SerializeObject(new Dictionary<string, object>
             {
                 { "login", login },
                 { "mdp", mdp }
@@ -744,19 +754,18 @@ namespace MediaTekDocuments.dal
             try
             {
                 JObject retour = api.RecupDistant(GET, "controleauthentification/" + json, null);
-                String code = (String)retour["code"];
+                string code = (string)retour["code"];
                 if (code.Equals("200"))
                 {
-                    String resultString = JsonConvert.SerializeObject(retour["result"]);
+                    string resultString = JsonConvert.SerializeObject(retour["result"]);
                     List<JObject> liste = JsonConvert.DeserializeObject<List<JObject>>(resultString);
                     if (liste != null && liste.Count > 0)
                         return liste[0]["idService"].ToString();
                 }
                 return null;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Console.WriteLine("Erreur : " + ex.Message);
                 return null;
             }
         }

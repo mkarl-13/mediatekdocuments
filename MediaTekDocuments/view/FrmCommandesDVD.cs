@@ -1,9 +1,8 @@
 ﻿using MediaTekDocuments.controller;
 using MediaTekDocuments.model;
 using System;
-using System.Data;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace MediaTekDocuments.view
@@ -86,9 +85,9 @@ namespace MediaTekDocuments.view
         /// Remplit le dategrid avec la liste reçue en paramètre
         /// </summary>
         /// <param name="Dvds">liste de dvds</param>
-        private void RemplirDvdListe(List<Dvd> Dvds)
+        private void RemplirDvdListe(List<Dvd> dvds)
         {
-            bdgDvdListe.DataSource = Dvds;
+            bdgDvdListe.DataSource = dvds;
             dgvDvdListe.DataSource = bdgDvdListe;
             dgvDvdListe.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
             dgvDvdListe.Columns["idRayon"].Visible = false;
@@ -100,9 +99,9 @@ namespace MediaTekDocuments.view
             dgvDvdListe.Columns["titre"].DisplayIndex = 1;
         }
 
-        private void RemplirCommandesListe(List<CommandeLivreDvd> Commandes)
+        private void RemplirCommandesListe(List<CommandeLivreDvd> commandes)
         {
-            bdgCommandesListe.DataSource = Commandes;
+            bdgCommandesListe.DataSource = commandes;
             dgvCommandesListe.DataSource = bdgCommandesListe;
             dgvCommandesListe.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
             dgvCommandesListe.Columns["Id"].Visible = false;
@@ -171,8 +170,6 @@ namespace MediaTekDocuments.view
                 {
                     Dvd dvd = (Dvd)bdgDvdListe.List[bdgDvdListe.Position];
                     AfficheDvdInfos(dvd);
-
-                    // Affichage des commandes
                     lesCommandes = controller.GetCommandesLivreDvd(dvd.Id);
                     RemplirCommandesListe(lesCommandes);
                 }
@@ -244,8 +241,8 @@ namespace MediaTekDocuments.view
                 txbDvdTitreRecherche.Text = "";
                 txbDvdNumRecherche.Text = "";
                 Public lePublic = (Public)cbxDvdPublics.SelectedItem;
-                List<Dvd> Dvd = lesDvd.FindAll(x => x.Public.Equals(lePublic.Libelle));
-                RemplirDvdListe(Dvd);
+                List<Dvd> dvdsFiltres = lesDvd.FindAll(x => x.Public.Equals(lePublic.Libelle));
+                RemplirDvdListe(dvdsFiltres);
                 cbxDvdRayons.SelectedIndex = -1;
                 cbxDvdGenres.SelectedIndex = -1;
             }
@@ -263,8 +260,8 @@ namespace MediaTekDocuments.view
                 txbDvdTitreRecherche.Text = "";
                 txbDvdNumRecherche.Text = "";
                 Rayon rayon = (Rayon)cbxDvdRayons.SelectedItem;
-                List<Dvd> Dvd = lesDvd.FindAll(x => x.Rayon.Equals(rayon.Libelle));
-                RemplirDvdListe(Dvd);
+                List<Dvd> dvdsFiltres = lesDvd.FindAll(x => x.Rayon.Equals(rayon.Libelle));
+                RemplirDvdListe(dvdsFiltres);
                 cbxDvdGenres.SelectedIndex = -1;
                 cbxDvdPublics.SelectedIndex = -1;
             }
@@ -282,8 +279,8 @@ namespace MediaTekDocuments.view
                 txbDvdTitreRecherche.Text = "";
                 txbDvdNumRecherche.Text = "";
                 Genre genre = (Genre)cbxDvdGenres.SelectedItem;
-                List<Dvd> Dvd = lesDvd.FindAll(x => x.Genre.Equals(genre.Libelle));
-                RemplirDvdListe(Dvd);
+                List<Dvd> dvdsFiltres = lesDvd.FindAll(x => x.Genre.Equals(genre.Libelle));
+                RemplirDvdListe(dvdsFiltres);
                 cbxDvdRayons.SelectedIndex = -1;
                 cbxDvdPublics.SelectedIndex = -1;
             }
@@ -336,8 +333,8 @@ namespace MediaTekDocuments.view
                 Dvd dvd = lesDvd.Find(x => x.Id.Equals(txbDvdNumRecherche.Text));
                 if (dvd != null)
                 {
-                    List<Dvd> Dvd = new List<Dvd>() { dvd };
-                    RemplirDvdListe(Dvd);
+                    List<Dvd> dvdTrouve = new List<Dvd>() { dvd };
+                    RemplirDvdListe(dvdTrouve);
                 }
                 else
                 {
@@ -477,7 +474,7 @@ namespace MediaTekDocuments.view
             }
         }
 
-        private void btnSupprimerClick(object sender, EventArgs e)
+        private void btnSupprimer_Click(object sender, EventArgs e)
         {
             if (dgvCommandesListe.CurrentCell != null)
             {
@@ -499,12 +496,7 @@ namespace MediaTekDocuments.view
             }
         }
 
-        private void groupBox1_Enter(object sender, EventArgs e)
-        {
-
-        }
-
-        private void btnAnnulerClick(object sender, EventArgs e)
+        private void btnAnnuler_Click(object sender, EventArgs e)
         {
             txtMontant.Text = "";
             txtNbExemplaire.Text = "";

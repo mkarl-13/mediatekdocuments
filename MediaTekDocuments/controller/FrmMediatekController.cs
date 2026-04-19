@@ -80,12 +80,11 @@ namespace MediaTekDocuments.controller
         /// <summary>
         /// getter sur les periodicites
         /// </summary>
-        /// <returns>Liste d'objets Public</returns>
+        /// <returns>Liste d'objets Categorie</returns>
         public List<Categorie> GetAllPeriodicites()
         {
             return access.GetAllPeriodicites();
         }
-
 
         /// <summary>
         /// récupère les exemplaires d'une revue
@@ -110,7 +109,7 @@ namespace MediaTekDocuments.controller
         /// <summary>
         /// Récupère le prochain id de livre à créer
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Prochain id disponible pour un livre</returns>
         public string GetNextIdLivre()
         {
             return access.GetNextIdLivre();
@@ -119,7 +118,7 @@ namespace MediaTekDocuments.controller
         /// <summary>
         /// Récupère le prochain id de dvd à créer
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Prochain id disponible pour un dvd</returns>
         public string GetNextIdDvd()
         {
             return access.GetNextIdDvd();
@@ -128,7 +127,7 @@ namespace MediaTekDocuments.controller
         /// <summary>
         /// Récupère le prochain id de revue à créer
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Prochain id disponible pour une revue</returns>
         public string GetNextIdRevue()
         {
             return access.GetNextIdRevue();
@@ -137,22 +136,36 @@ namespace MediaTekDocuments.controller
         /// <summary>
         /// Récupère le prochain id de commande à créer
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Prochain id disponible pour une commande</returns>
         public string GetNextIdCommande()
         {
             return access.GetNextIdCommande();
         }
 
+        /// <summary>
+        /// Récupère les commandes d'un livre ou dvd
+        /// </summary>
+        /// <param name="idLivresDvd">id du livre ou dvd concerné</param>
+        /// <returns>Liste d'objets CommandeLivreDvd</returns>
         public List<CommandeLivreDvd> GetCommandesLivreDvd(string idLivresDvd)
         {
             return access.GetCommandesLivreDvd(idLivresDvd);
         }
 
+        /// <summary>
+        /// Récupère les abonnements d'une revue
+        /// </summary>
+        /// <param name="idRevue">id de la revue concernée</param>
+        /// <returns>Liste d'objets CommandeRevue</returns>
         public List<CommandeRevue> GetCommandesRevue(string idRevue)
         {
             return access.GetCommandesRevue(idRevue);
         }
 
+        /// <summary>
+        /// getter sur les suivis
+        /// </summary>
+        /// <returns>Liste d'objets Suivi</returns>
         public List<Suivi> GetAllSuivis()
         {
             return access.GetAllSuivis();
@@ -248,21 +261,42 @@ namespace MediaTekDocuments.controller
             return access.SupprimerRevue(id);
         }
 
+        /// <summary>
+        /// Crée une commande de livre ou dvd dans la BDD
+        /// </summary>
+        /// <param name="commande">objet CommandeLivreDvd à insérer</param>
+        /// <returns>true si l'insertion a pu se faire</returns>
         public bool CreerCommandeLivreDvd(CommandeLivreDvd commande)
         {
             return access.CreerCommandeLivreDvd(commande);
         }
 
+        /// <summary>
+        /// Crée un abonnement de revue dans la BDD
+        /// </summary>
+        /// <param name="commande">objet CommandeRevue à insérer</param>
+        /// <returns>true si l'insertion a pu se faire</returns>
         public bool CreerCommandeRevue(CommandeRevue commande)
         {
             return access.CreerCommandeRevue(commande);
         }
 
+        /// <summary>
+        /// Modifie le suivi d'une commande de livre ou dvd dans la BDD
+        /// </summary>
+        /// <param name="idCommande">id de la commande à modifier</param>
+        /// <param name="idSuivi">nouvel id de suivi</param>
+        /// <returns>true si la modification a pu se faire</returns>
         public bool ModifierSuiviCommandeLivreDvd(string idCommande, int idSuivi)
         {
             return access.ModifierSuiviCommandeLivreDvd(idCommande, idSuivi);
         }
 
+        /// <summary>
+        /// Supprime une commande de livre ou dvd dans la BDD si son suivi le permet
+        /// </summary>
+        /// <param name="commande">objet CommandeLivreDvd à supprimer</param>
+        /// <returns>true si la suppression a pu se faire</returns>
         public bool SupprimerCommandeLivreDvd(CommandeLivreDvd commande)
         {
             if (commande.IdSuivi == 3 || commande.IdSuivi == 4)
@@ -272,6 +306,11 @@ namespace MediaTekDocuments.controller
             return access.SupprimerCommandeLivreDvd(commande.Id);
         }
 
+        /// <summary>
+        /// Supprime un abonnement de revue dans la BDD
+        /// </summary>
+        /// <param name="commandeId">id de l'abonnement à supprimer</param>
+        /// <returns>true si la suppression a pu se faire</returns>
         public bool SupprimerCommandeRevue(string commandeId)
         {
             return access.SupprimerCommandeRevue(commandeId);
@@ -280,10 +319,10 @@ namespace MediaTekDocuments.controller
         /// <summary>
         /// Renvoie true si un exemplaire/parution fait partie d'un abonnement
         /// </summary>
-        /// <param name="dateCommande"></param>
-        /// <param name="dateFinAbonnement"></param>
-        /// <param name="dateParution"></param>
-        /// <returns></returns>
+        /// <param name="dateCommande">date de début de l'abonnement</param>
+        /// <param name="dateFinAbonnement">date de fin de l'abonnement</param>
+        /// <param name="dateParution">date de parution de l'exemplaire</param>
+        /// <returns>true si la parution est dans la période d'abonnement</returns>
         public bool ParutionDansAbonnement(
             DateTime dateCommande,
             DateTime dateFinAbonnement,
@@ -292,6 +331,10 @@ namespace MediaTekDocuments.controller
             return dateParution >= dateCommande && dateParution <= dateFinAbonnement;
         }
 
+        /// <summary>
+        /// Récupère les abonnements dont la fin est proche
+        /// </summary>
+        /// <returns>Liste d'objets CommandeRevue</returns>
         public List<CommandeRevue> GetAbonnementsFinProche()
         {
             return access.GetAbonnementsFinProche();
