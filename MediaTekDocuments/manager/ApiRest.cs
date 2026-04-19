@@ -1,6 +1,7 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
+using System.Configuration;
 using System.Net.Http;
-using Newtonsoft.Json.Linq;
 
 namespace MediaTekDocuments.manager
 {
