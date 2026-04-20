@@ -31,6 +31,7 @@ namespace MediaTekDocuments.manager
         private ApiRest(String uriApi, String authenticationString="")
         {
             httpClient = new HttpClient() { BaseAddress = new Uri(uriApi) };
+            httpClient.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)");
             // prise en compte dans l'url de l'authentificaiton (basic authorization), si elle n'est pas vide
             if (!String.IsNullOrEmpty(authenticationString))
             {
@@ -63,36 +64,50 @@ namespace MediaTekDocuments.manager
         /// <returns>liste d'objets (select) ou liste vide (ok) ou null si erreur</returns>
         public JObject RecupDistant(string methode, string message, String parametres)
         {
-            // transformation des paramètres pour les mettre dans le body
-            StringContent content = null;
-            if(!(parametres is null))
+            for (int tentative = 0; tentative <= 2; tentative++)
             {
-                content = new StringContent(parametres, System.Text.Encoding.UTF8, "application/x-www-form-urlencoded");
-            }
-            // envoi du message et attente de la réponse
-            switch (methode)
-            {
-                case "GET":
-                    httpResponse = httpClient.GetAsync(message).Result;
+                if (tentative > 0)
+                    System.Threading.Thread.Sleep(3000);
+                // transformation des paramètres pour les mettre dans le body
+                StringContent content = null;
+                if (!(parametres is null))
+                {
+                    content = new StringContent(parametres, System.Text.Encoding.UTF8, "application/x-www-form-urlencoded");
+                }
+                // envoi du message et attente de la réponse
+                switch (methode)
+                {
+                    case "GET":
+                        httpResponse = httpClient.GetAsync(message).Result;
+                        break;
+                    case "POST":
+                        httpResponse = httpClient.PostAsync(message, content).Result;
+                        break;
+                    case "PUT":
+                        httpResponse = httpClient.PutAsync(message, content).Result;
+                        break;
+                    case "DELETE":
+                        HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Delete, message);
+                        request.Content = content;
+                        httpResponse = httpClient.SendAsync(request).Result;
+                        break;
+                    // methode incorrecte
+                    default:
+                        return new JObject();
+                }
+                if ((int)httpResponse.StatusCode != 429)
                     break;
-                case "POST":
-                    httpResponse = httpClient.PostAsync(message, content).Result;
-                    break;
-                case "PUT":
-                    httpResponse = httpClient.PutAsync(message, content).Result;
-                    break;
-                case "DELETE":
-                    HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Delete, message);
-                    request.Content = content;
-                    httpResponse = httpClient.SendAsync(request).Result;
-                    break;
-                // methode incorrecte
-                default:
-                    return new JObject();
             }
             // récupération de l'information retournée par l'api
-            var json = httpResponse.Content.ReadAsStringAsync().Result; 
-            return JObject.Parse(json);
+            var json = httpResponse.Content.ReadAsStringAsync().Result;
+            try
+            {
+                return JObject.Parse(json);
+            }
+            catch (Exception)
+            {
+                throw new Exception("Réponse non JSON (" + (int)httpResponse.StatusCode + ") : " + json.Substring(0, Math.Min(300, json.Length)));
+            }
         }
 
     }

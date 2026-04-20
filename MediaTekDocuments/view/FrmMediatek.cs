@@ -41,8 +41,15 @@ namespace MediaTekDocuments.view
         {
             tabOngletsApplication.TabPages.Remove(tabReceptionRevue);
 
-            grpDvdOperations.Visible = false;
-            grpLivresOperations.Visible = false;
+            btnDvdSupprimer.Visible = false;
+            btnDvdModifier.Visible = false;
+            btnDvdAjout.Visible = false;
+            btnVoirCommandesDVD.Visible = false;
+
+            btnLivresSupprimer.Visible = false;
+            btnLivresModifier.Visible = false;
+            btnLivresAjout.Visible = false;
+            button1.Visible = false;
 
             btnRevuesSupprimer.Visible = false;
             btnRevuesModifier.Visible = false;

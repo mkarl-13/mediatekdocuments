@@ -6,6 +6,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.IO;
 
 namespace MediaTekDocuments.dal
 {
@@ -17,7 +18,7 @@ namespace MediaTekDocuments.dal
         /// <summary>
         /// adresse de l'API
         /// </summary>
-        private static readonly string uriApi = "http://localhost/rest_mediatekdocuments/";
+        private static readonly string uriApi = "http://sc4mika2559.universe.wf/rest_mediatekdocuments/";
         /// <summary>
         /// informations de connexion récupérées depuis App.config
         /// </summary>
@@ -46,6 +47,10 @@ namespace MediaTekDocuments.dal
         /// méthode HTTP pour suppression
         /// </summary>
         private const string DELETE = "DELETE";
+        /// <summary>
+        /// chemin du fichier de logs
+        /// </summary>
+        private static readonly string logPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "mediatekdocuments.log");
 
         /// <summary>
         /// Méthode privée pour créer un singleton
@@ -59,7 +64,7 @@ namespace MediaTekDocuments.dal
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Log(e.Message);
                 Environment.Exit(0);
             }
         }
@@ -189,7 +194,7 @@ namespace MediaTekDocuments.dal
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                Log(ex.Message);
             }
             return false;
         }
@@ -223,14 +228,30 @@ namespace MediaTekDocuments.dal
                 }
                 else
                 {
-                    Console.WriteLine("code erreur = " + code + " message = " + (String)retour["message"]);
+                    Log("code erreur = " + code + " message = " + (String)retour["message"]);
                 }
             }catch(Exception e)
             {
-                Console.WriteLine("Erreur lors de l'accès à l'API : "+e.Message);
+                Log("Erreur lors de l'accès à l'API [" + message + "] : " + e.Message);
                 Environment.Exit(0);
             }
             return liste;
+        }
+
+        /// <summary>
+        /// Ecrit un message dans la console et dans le fichier de logs
+        /// </summary>
+        /// <param name="message">message à enregistrer</param>
+        private static void Log(string message)
+        {
+            Console.WriteLine(message);
+            try
+            {
+                File.AppendAllText(logPath, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + " : " + message + Environment.NewLine);
+            }
+            catch (Exception)
+            {
+            }
         }
 
         /// <summary>
@@ -761,11 +782,17 @@ namespace MediaTekDocuments.dal
                     List<JObject> liste = JsonConvert.DeserializeObject<List<JObject>>(resultString);
                     if (liste != null && liste.Count > 0)
                         return liste[0]["idService"].ToString();
+                    Log("Authentification échouée : aucun résultat pour le login " + login);
+                }
+                else
+                {
+                    Log("Authentification échouée : code=" + code + " message=" + (string)retour["message"]);
                 }
                 return null;
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                Log("Erreur lors de l'authentification : " + e.Message);
                 return null;
             }
         }

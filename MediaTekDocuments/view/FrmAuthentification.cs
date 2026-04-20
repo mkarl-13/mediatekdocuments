@@ -40,5 +40,9 @@ namespace MediaTekDocuments.view
             }
         }
 
+        private void FrmAuthentification_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }

@@ -132,7 +132,7 @@
             // btnDvdNumRecherche
             // 
             this.btnDvdNumRecherche.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnDvdNumRecherche.Location = new System.Drawing.Point(314, 47);
+            this.btnDvdNumRecherche.Location = new System.Drawing.Point(314, 44);
             this.btnDvdNumRecherche.Name = "btnDvdNumRecherche";
             this.btnDvdNumRecherche.Size = new System.Drawing.Size(96, 22);
             this.btnDvdNumRecherche.TabIndex = 14;
@@ -144,7 +144,7 @@
             // 
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(6, 52);
+            this.label5.Location = new System.Drawing.Point(6, 47);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(186, 13);
             this.label5.TabIndex = 13;
@@ -152,9 +152,9 @@
             // 
             // txbDvdNumRecherche
             // 
-            this.txbDvdNumRecherche.Location = new System.Drawing.Point(220, 47);
+            this.txbDvdNumRecherche.Location = new System.Drawing.Point(220, 44);
             this.txbDvdNumRecherche.Name = "txbDvdNumRecherche";
-            this.txbDvdNumRecherche.Size = new System.Drawing.Size(80, 20);
+            this.txbDvdNumRecherche.Size = new System.Drawing.Size(88, 20);
             this.txbDvdNumRecherche.TabIndex = 12;
             // 
             // btnDvdAnnulGenres

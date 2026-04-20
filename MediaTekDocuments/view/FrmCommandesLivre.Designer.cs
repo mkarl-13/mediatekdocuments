@@ -333,7 +333,7 @@
             // 
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(6, 42);
+            this.label5.Location = new System.Drawing.Point(6, 47);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(186, 13);
             this.label5.TabIndex = 13;
@@ -343,7 +343,7 @@
             // 
             this.txbLivreNumRecherche.Location = new System.Drawing.Point(220, 44);
             this.txbLivreNumRecherche.Name = "txbLivreNumRecherche";
-            this.txbLivreNumRecherche.Size = new System.Drawing.Size(67, 20);
+            this.txbLivreNumRecherche.Size = new System.Drawing.Size(88, 20);
             this.txbLivreNumRecherche.TabIndex = 12;
             // 
             // btnLivresAnnulGenres
